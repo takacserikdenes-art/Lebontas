@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Komposzt-kvíz</title>
+  <style>
+    :root{font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:#f7fbff;color:#0b2545}
+    body{display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;padding:24px}
+    .card{background:white;border-radius:12px;box-shadow:0 6px 20px rgba(11,37,69,0.08);width:100%;max-width:720px;padding:20px}
+    h1{font-size:20px;margin:14px 0 6px}
+    p.tip{margin:6px 0 12px;color:#204060}
+    .controls{display:flex;gap:8px;align-items:center}
+    button{padding:10px 14px;border-radius:8px;border:0;cursor:pointer;font-weight:600}
+    .btn-primary{background:#0b61ff;color:white}
+    .btn-secondary{background:#e6eefc;color:#0b61ff}
+    .btn-disabled{opacity:0.45;cursor:not-allowed}
+    .answer{margin-top:12px;padding:12px;border-radius:8px;background:#f4f8ff;border:1px solid #e0ecff}
+    .meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:#456}
+    .progress{height:8px;background:#e6eefc;border-radius:8px;overflow:hidden;margin-top:8px}
+    .progress > i{display:block;height:100%;background:#0b61ff;width:0%}
+    footer{font-size:12px;color:#6b7b90;margin-top:12px}
+    input{flex:1;padding:8px;border-radius:8px;border:1px solid #dfe9ff}
+  </style>
+</head>
+<body>
+  <div class="card" role="main">
+    <h1>Komposzt-kvíz</h1>
+    <p class="tip" id="tipText">Tipp: Írd be, mennyi idő alatt bomlik le.</p>
+
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
+      <input id="guessInput" placeholder="Írd ide a tipped" />
+      <button class="btn-primary" id="showAnswer">Mutasd a választ</button>
+    </div>
+
+    <div id="answerBox" style="display:none" class="answer" aria-live="polite"></div>
+
+    <div class="controls" style="margin-top:10px">
+      <button class="btn-secondary" id="prevBtn">Vissza</button>
+      <button class="btn-secondary" id="nextBtn">Következő</button>
+      <div style="flex:1"></div>
+      <div class="meta"><div id="counter">1 / 7</div></div>
+    </div>
+
+    <div class="progress" aria-hidden="true"><i id="progressBar"></i></div>
+
+    <footer>Írd meg a tippedet, kattints a <strong>Mutasd a választ</strong>-ra, majd a <strong>Következő</strong>-re a továbblépéshez.</footer>
+  </div>
+
+  <script>
+    const items = [
+      {id:'plastic_bag', tip:'Műanyag zacskó', answer:'Válasz: 500 év'},
+      {id:'apricot_pit', tip:'Barackmag', answer:'Válasz: 4 év'},
+      {id:'paper', tip:'Papír', answer:'Válasz: 1 év'},
+      {id:'cotton_tshirt', tip:'Pamut póló', answer:'Válasz: 2 év'},
+      {id:'tin_can', tip:'Konzervdoboz', answer:'Válasz: 50 év'},
+      {id:'aluminium', tip:'Alumínium', answer:'Válasz: 200 év'},
+      {id:'branch', tip:'Faág', answer:'Válasz: 2 év'}
+    ];
+
+    let idx = 0;
+    const tipEl = document.getElementById('tipText');
+    const answerBox = document.getElementById('answerBox');
+    const showAnswerBtn = document.getElementById('showAnswer');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const guessInput = document.getElementById('guessInput');
+    const counter = document.getElementById('counter');
+    const progress = document.getElementById('progressBar');
+
+    function render(){
+      const it = items[idx];
+      tipEl.textContent = 'Tipp: ' + it.tip;
+      answerBox.style.display = 'none';
+      answerBox.textContent = '';
+      guessInput.value = '';
+      counter.textContent = (idx+1) + ' / ' + items.length;
+      progress.style.width = (100*(idx+1)/items.length) + '%';
+      prevBtn.disabled = idx === 0;
+      prevBtn.classList.toggle('btn-disabled', idx===0);
+    }
+
+    showAnswerBtn.addEventListener('click', ()=>{
+      const it = items[idx];
+      answerBox.style.display = 'block';
+      answerBox.textContent = it.answer;
+    });
+
+    nextBtn.addEventListener('click', ()=>{
+      if(idx < items.length -1){ idx++; render(); }
+      else{ idx = 0; render(); }
+    });
+
+    prevBtn.addEventListener('click', ()=>{
+      if(idx>0){ idx--; render(); }
+    });
+
+    render();
+  </script>
+</body>
+</html>
